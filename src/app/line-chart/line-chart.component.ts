@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {Chart} from "chart.js";
+import {Chart, Point} from "chart.js";
 
 @Component({
   selector: 'app-line-chart',
@@ -16,8 +16,11 @@ export class LineChartComponent implements AfterViewInit {
   @ViewChild('chart')
   private chartRef: ElementRef;
   private chart: Chart;
+  private data: Point[];
 
-  constructor() {}
+  constructor() {
+    this.data = [{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 6}, {x: 4, y: 2}, {x: 4.1, y: 6}];
+  }
 
   ngAfterViewInit() {
     this.chart = new Chart(this.chartRef.nativeElement, {
@@ -25,7 +28,7 @@ export class LineChartComponent implements AfterViewInit {
       data: {
         datasets: [{
           label: 'Interesting Data',
-          data: [{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 6}, {x: 4, y: 2}, {x: 4.1, y: 6}],
+          data: this.data,
           fill: false
         }]
       },
