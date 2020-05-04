@@ -1,10 +1,11 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {Chart, Point} from "chart.js";
 
 @Component({
-  selector: 'app-line-chart',
+  selector: 'app-line-chart-with-data',
   template: `
-      <canvas #chart></canvas>`,
+      <canvas #chart></canvas>
+  `,
   styles: [`
       :host {
           display: inline-block;
@@ -12,13 +13,14 @@ import {Chart, Point} from "chart.js";
       }
   `]
 })
-export class LineChartComponent implements AfterViewInit {
+export class LineChartWithDataComponent implements AfterViewInit {
   @ViewChild('chart')
   private chartRef: ElementRef;
   private chart: Chart;
-  private readonly data: Point[] = [{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 6}, {x: 4, y: 2}, {x: 4.1, y: 6}];
+  @Input()
+  data: Point[];
 
-  constructor() { }
+  constructor() {}
 
   ngAfterViewInit() {
     this.chart = new Chart(this.chartRef.nativeElement, {

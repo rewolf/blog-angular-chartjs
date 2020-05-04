@@ -1,8 +1,10 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {Chart, Point} from "chart.js";
+import {Observable} from "rxjs";
+import {bufferTime} from "rxjs/operators";
 
 @Component({
-  selector: 'app-line-chart',
+  selector: 'app-line-chart-reactive',
   template: `
       <canvas #chart></canvas>`,
   styles: [`
@@ -12,13 +14,15 @@ import {Chart, Point} from "chart.js";
       }
   `]
 })
-export class LineChartComponent implements AfterViewInit {
+export class LineChartReactiveComponent implements AfterViewInit {
   @ViewChild('chart')
   private chartRef: ElementRef;
   private chart: Chart;
-  private readonly data: Point[] = [{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 6}, {x: 4, y: 2}, {x: 4.1, y: 6}];
+  @Input()
+  private dataSource: Observable<Point>;
+  private readonly data: Point[] = [];
 
-  constructor() { }
+  constructor() {}
 
   ngAfterViewInit() {
     this.chart = new Chart(this.chartRef.nativeElement, {
@@ -40,5 +44,13 @@ export class LineChartComponent implements AfterViewInit {
         }
       }
     });
+
+    this.dataSource
+        .pipe(bufferTime(100))
+        .subscribe(points => {
+          points.forEach(p => this.data.push(p));
+          if (this.data.length > 200) this.data.splice(0, this.data.length - 200);
+          this.chart.update();
+        });
   }
 }
