@@ -1,6 +1,6 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild} from '@angular/core';
 import {Chart, Point} from "chart.js";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {bufferTime} from "rxjs/operators";
 
 @Component({
@@ -14,13 +14,14 @@ import {bufferTime} from "rxjs/operators";
       }
   `]
 })
-export class LineChartReactiveComponent implements AfterViewInit {
+export class LineChartReactiveComponent implements AfterViewInit, OnDestroy {
   @ViewChild('chart')
   private chartRef: ElementRef;
   private chart: Chart;
   @Input()
   private dataSource: Observable<Point>;
   private readonly data: Point[] = [];
+  private dataSourceSubscription: Subscription;
 
   constructor() {}
 
@@ -45,12 +46,16 @@ export class LineChartReactiveComponent implements AfterViewInit {
       }
     });
 
-    this.dataSource
+    this.dataSourceSubscription = this.dataSource
         .pipe(bufferTime(100))
         .subscribe(points => {
           points.forEach(p => this.data.push(p));
           if (this.data.length > 200) this.data.splice(0, this.data.length - 200);
           this.chart.update();
         });
+  }
+
+  ngOnDestroy(): void {
+    this.dataSourceSubscription.unsubscribe();
   }
 }
