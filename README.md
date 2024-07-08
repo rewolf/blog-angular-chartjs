@@ -1,7 +1,4 @@
 # Angular Chart.js Demo
-This project code accompanies a blog found at 
-
-https://andrew-flower.com/blog/angular-chartjs
 
 It is an example of creating Angular components around Chart.js charts.
 
